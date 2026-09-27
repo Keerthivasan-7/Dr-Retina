@@ -1,0 +1,46 @@
+# P2.2c — lesion segmentation, full merged data + native-resolution patches
+# + CLAHE enhancement.
+#
+# Sources merged: IDRiD (54 train), DDR (757 bonus, MA/HE/EX/SE), e-ophtha
+# (463 bonus: 148 MA-annotated + 233 MA-healthy + 47 EX-annotated + 35
+# EX-healthy). Optic Disc loss/pos_weight still comes from IDRiD alone (the
+# only source that annotates it) — DDR/e-ophtha rows are excluded from OD
+# via the `valid` mask, never trained as "OD absent".
+#
+# The IDRiD+DDR merge alone (configs/lesion_segmentation_merged.yaml) added
+# 15x the training images but left Microaneurysms at 0.0 dice — proof that
+# data volume alone doesn't fix MA. The real cause: MA lesions are 2-5px at
+# native resolution and vanish when whole images are downsampled to 512x512
+# for training. This config switches to `patch_size`-based training
+# (PatchLesionSegmentationDataset): crops are taken at NATIVE resolution and
+# centered on actual lesion pixels 80% of the time, so MA survives at real
+# size in the training signal instead of being destroyed before the model
+# ever sees it.
+#
+# CLAHE (contrast-limited adaptive histogram equalization, on LAB's L
+# channel) is applied to every image before augmentation — boosts local
+# contrast for small low-contrast red lesions against the retinal
+# background, and doubles as the PS's item-1 "illumination normalization"
+# requirement.
+run_id: p2c_lesion_segmentation_full
+seed: 42
+
+data:
+  idrid_segmentation_root: "data/raw/idrid/A. Segmentation"
+  ddr_lesion_segmentation_root: "data/raw/ddr/DDR-dataset/DDR-dataset/lesion_segmentation"
+  e_ophtha_root: "data/raw/e_ophtha"
+  image_size: 512   # used for the (unused here) whole-image path and for val
+  patch_size: 512   # native-resolution crop size for training
+
+model:
+  base_channels: 32
+
+train:
+  epochs: 60
+  batch_size: 12
+  num_workers: 4
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  amp: true
+  early_stop_patience: 10   # stop if val mean_dice hasn't improved in 10 epochs
+  checkpoint_dir: reports/checkpoints/p2c_lesion_segmentation_full

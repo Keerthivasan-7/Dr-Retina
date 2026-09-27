@@ -1,0 +1,2 @@
+import { AccountForm } from "@/features/auth/AccountForm";
+export default function Page() { return <AccountForm mode="reset" />; }

@@ -1,0 +1,30 @@
+# P0.4 FIQA baseline: cheap 3-class quality gate (Good/Usable/Reject).
+run_id: p0_fiqa_effnet_b0
+seed: 42
+
+data:
+  train_csv: data/splits/fiqa_train.csv
+  val_csv: data/splits/fiqa_val.csv
+  external_csv: data/splits/fiqa_external_drimdb.csv
+  image_root: data/processed
+  image_size: 224
+
+model:
+  backbone: efficientnet_b0
+  pretrained: true
+  num_classes: 3
+
+train:
+  epochs: 15
+  batch_size: 32
+  num_workers: 4
+  optimizer: adamw
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  amp: true
+  checkpoint_metric: auroc_good_vs_reject
+  checkpoint_dir: reports/checkpoints/p0_fiqa_effnet_b0
+
+log:
+  log_every_n_steps: 50

@@ -1,0 +1,21 @@
+# P2.2 — lesion segmentation, proof-of-concept scale (54 training images).
+run_id: p2_lesion_segmentation
+seed: 42
+
+data:
+  idrid_segmentation_root: "data/raw/idrid/A. Segmentation"
+  image_size: 512
+
+model:
+  base_channels: 32   # compact U-Net; small on purpose given the tiny dataset
+
+train:
+  epochs: 80           # cheap per-epoch (54 images) — more epochs, heavier augmentation reliance
+  batch_size: 4
+  num_workers: 4    # single-threaded (0) was ~9 min/epoch, unusably slow given
+                    # full-resolution IDRiD source images; 4 workers was fine
+                    # earlier when nothing else was competing for the GPU
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  amp: true
+  checkpoint_dir: reports/checkpoints/p2_lesion_segmentation

@@ -1,0 +1,42 @@
+# Colab variant of baseline_resnet50.yaml — same hyperparameters (so this is
+# still the same experiment, just on faster/non-power-capped hardware), only
+# paths differ: absolute paths matching where the training notebook extracts
+# the project (/content/dr_retina) and a checkpoint_dir under Google Drive so
+# last.pt/best.pt survive a Colab runtime disconnect (see --resume support in
+# train_baseline.py — this is exactly what it's for).
+run_id: p0_baseline_resnet50
+seed: 42
+
+data:
+  train_csv: /content/dr_retina/data/splits/train_colab.csv
+  val_csv: /content/dr_retina/data/splits/val_colab.csv
+  image_root: /content/dr_retina/data/processed
+  image_size: 512
+  augment: false
+
+model:
+  backbone: resnet50          # resnet50 | efficientnet_b0
+  pretrained: true
+  head: softmax                # softmax | coral (P2)
+  num_classes: 5
+  dropout: 0.3
+
+train:
+  epochs: 30
+  batch_size: 16               # bump this if your Colab GPU has more VRAM than this laptop's 6GB (see notebook note)
+  num_workers: 2                # Colab free tier is typically 2 vCPUs; raise if you have Colab Pro/Pro+
+  optimizer: adamw
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  warmup_epochs: 2
+  amp: true
+  class_weighting: inverse_frequency
+  grad_clip_norm: 1.0
+  early_stop_patience: 8
+  checkpoint_metric: qwk
+  checkpoint_dir: /content/drive/MyDrive/dr_retina_checkpoints/p0_baseline_resnet50
+
+log:
+  log_every_n_steps: 50
+  confusion_matrix_every_epoch: true

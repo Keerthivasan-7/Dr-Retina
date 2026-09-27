@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* Shared blue identity for the SIH26038 screening platform. */
+@theme {
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
+
+  --color-retina-blue: #0284c7;
+  --color-retina-cyan: #06b6d4;
+  --color-retina-teal: #2563eb;
+  --color-retina-emerald: #059669;
+  --color-retina-amber: #d97706;
+  --color-retina-rose: #e11d48;
+  --color-retina-slate: #0f172a;
+
+  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-card: 0 10px 30px -5px rgba(37, 99, 235, 0.10), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 25px -5px rgba(37, 99, 235, 0.25);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom subtle scrollbars (ported from legacy index.css) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom glow animations (ported) */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0.7; }
+  50% { top: 96%; opacity: 1; }
+  100% { top: 0%; opacity: 0.7; }
+}
+.animate-scan {
+  animation: scan-line 3s linear infinite;
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 0.18s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-slow,
+  .animate-scan,
+  .animate-scale-in,
+  .animate-fade-in {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@layer base {
+  body { background: #f5f8ff; }
+  h1, h2, h3 { font-family: var(--font-jakarta), var(--font-inter), sans-serif; }
+  a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+  section[id] { scroll-margin-top: 6rem; }
+}
+
+.landing-shell {
+  background: radial-gradient(ellipse at 15% 5%, #dbeafe 0, transparent 32%),
+    radial-gradient(ellipse at 90% 15%, #e0f2fe 0, transparent 28%), #f8faff;
+}
+.retina-stage {
+  background: radial-gradient(ellipse at center, #dbeafe80, transparent 65%),
+    linear-gradient(135deg, #ffffffed, #eff6ffed);
+}
+.feature-card { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
+@media (hover: hover) {
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 35px -16px #1e40af40; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .feature-card:hover { transform: none; }
+}

@@ -1,0 +1,33 @@
+# P2.2b — lesion segmentation, IDRiD + DDR merged training data.
+#
+# IDRiD alone (54 training images) left Microaneurysms at 0.0 dice even after
+# fixing the per-channel loss-averaging bug — a genuine data-scarcity
+# ceiling for a single-pixel-scale class, not a hyperparameter problem. DDR's
+# lesion_segmentation split (already downloaded, previously unused) adds
+# ~757 more MA/HE/EX/SE-annotated images on top, ~15x the training volume.
+# DDR doesn't annotate Optic Disc, so OD's loss/pos_weight still comes from
+# IDRiD alone (see MergedLesionSegmentationDataset's `valid` masking).
+#
+# Validation stays IDRiD's own official Testing Set only (27 images) — DDR is
+# training-only bonus data, never mixed into the metric, so results are
+# directly comparable to the IDRiD-only run in
+# reports/checkpoints/p2_lesion_segmentation/.
+run_id: p2b_lesion_segmentation_merged
+seed: 42
+
+data:
+  idrid_segmentation_root: "data/raw/idrid/A. Segmentation"
+  ddr_lesion_segmentation_root: "data/raw/ddr/DDR-dataset/DDR-dataset/lesion_segmentation"
+  image_size: 512
+
+model:
+  base_channels: 32   # compact U-Net; small on purpose given the tiny dataset
+
+train:
+  epochs: 40           # ~15x more training images/epoch than the IDRiD-only run — fewer epochs needed
+  batch_size: 8        # small U-Net (~1.9M params); doubled from the IDRiD-only run's batch_size=4
+  num_workers: 4
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  amp: true
+  checkpoint_dir: reports/checkpoints/p2b_lesion_segmentation_merged

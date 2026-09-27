@@ -1,0 +1,29 @@
+# P2.2d — lesion segmentation v2: pretrained ResNet-34 U-Net, Focal Tversky
+# Loss, MA/HE/EX/SE only. See src/train/train_lesion_segmentation_v2.py's
+# module docstring for the full reasoning (three earlier attempts and why
+# each one left Microaneurysms at 0.0 dice).
+run_id: p2d_lesion_segmentation_v2
+seed: 42
+
+data:
+  idrid_segmentation_root: "data/raw/idrid/A. Segmentation"
+  ddr_lesion_segmentation_root: "data/raw/ddr/DDR-dataset/DDR-dataset/lesion_segmentation"
+  e_ophtha_root: "data/raw/e_ophtha"
+  image_size: 512     # val only (whole-image, via IDRiD's own test split)
+  patch_size: 512      # native-resolution training crops
+
+model:
+  encoder_name: resnet34   # ImageNet-pretrained, via segmentation_models_pytorch
+
+train:
+  epochs: 60
+  batch_size: 10            # slightly smaller than v1's 12 — pretrained encoder costs more memory
+  num_workers: 4
+  lr: 3.0e-4                 # lower than v1's 1e-3 — fine-tuning a pretrained encoder, not training from scratch
+  weight_decay: 1.0e-4
+  amp: true
+  tversky_alpha: 0.3         # false-positive weight
+  tversky_beta: 0.7          # false-negative weight (> alpha: recall matters more for tiny lesions)
+  tversky_gamma: 0.75        # focal exponent — focuses training on hard/low-Tversky channels
+  early_stop_patience: 12    # a bit more patient than v1 — no OD noise to falsely trigger this now
+  checkpoint_dir: reports/checkpoints/p2d_lesion_segmentation_v2

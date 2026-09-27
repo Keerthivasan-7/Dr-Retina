@@ -1,0 +1,9 @@
+node_modules
+.next
+.env
+.env.*
+backend/.env*
+backend/.venv
+test-results
+playwright-report
+.git

@@ -1,0 +1,51 @@
+# T4-maximizing variant of p1_augmented_colab.yaml, for running in a second
+# Colab account in parallel with the original P1 run. Only batch_size and
+# num_workers differ — the notebook (notebooks/train_p1_t4_max.ipynb)
+# auto-probes the largest batch size that fits the T4's 16GB before writing
+# it here, so the batch_size below is just a starting point, not final.
+#
+# Rationale for why this can be meaningfully faster, not just "bigger
+# batch != better model": the original p1_augmented_colab.yaml (batch_size:
+# 16) was sized conservatively without a memory probe. ResNet-50 at 512x512
+# with AMP + channels_last on a T4 (16GB) has substantial headroom above
+# batch 16 — larger batches better saturate the T4's tensor cores per step
+# and cut per-epoch wall-clock time via fewer, larger kernel launches, for
+# the *same* number of gradient updates worth of data (LR is not re-tuned
+# here, since AdamW is comparatively batch-size-tolerant versus SGD; if the
+# auto-picked batch size ends up far from 16, consider revisiting `lr`).
+run_id: p1_augmented_resnet50_t4max
+seed: 42
+
+data:
+  train_csv: /content/dr_retina/data/splits/train_colab.csv
+  val_csv: /content/dr_retina/data/splits/val_colab.csv
+  image_root: /content/dr_retina/data/processed
+  image_size: 512
+  augment: true
+
+model:
+  backbone: resnet50
+  pretrained: true
+  head: softmax
+  num_classes: 5
+  dropout: 0.3
+
+train:
+  epochs: 30
+  batch_size: 48  # starting point; notebook overwrites this after the OOM probe
+  num_workers: 4
+  optimizer: adamw
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  warmup_epochs: 2
+  amp: true
+  class_weighting: inverse_frequency
+  grad_clip_norm: 1.0
+  early_stop_patience: 8
+  checkpoint_metric: qwk
+  checkpoint_dir: /content/drive/MyDrive/dr_retina_checkpoints/p1_augmented_resnet50_t4max
+
+log:
+  log_every_n_steps: 50
+  confusion_matrix_every_epoch: true

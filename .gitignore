@@ -1,0 +1,59 @@
+# Data (large, not versioned — see data/manifest.csv for provenance)
+data/raw/
+data/processed/
+data/splits/*.csv
+Dataset zip/
+datasets/
+graphify-out/
+kaggle.json
+
+# Archived pre-plan project state
+_archive/
+
+# Reports (generated; keep only curated summaries if desired)
+reports/*.md
+reports/**/*.png
+reports/*.log
+reports/ddr_ungradable.csv
+reports/explainability/
+!reports/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+
+# Exported inference artifacts (regenerable via src/serve/export_onnx.py)
+reports/onnx/
+*.onnx
+
+# MATLAB
+*.asv
+*.m~
+*.slx.autosave
+slprj/
+matlab/drretina_feasibility_simevents.slx
+# importNetworkFromONNX auto-generated custom-layer support code (regenerable)
++*/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local tooling scratch state — not project deliverables
+.codex-build-retina/
+.codex-finalizer/
+deliverables/
+.claude/
+CLAUDE.md
+AGENTS.md

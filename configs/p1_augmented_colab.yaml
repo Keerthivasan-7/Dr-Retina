@@ -1,0 +1,41 @@
+# Colab variant of p1_augmented.yaml — same relationship as
+# baseline_resnet50_colab.yaml has to baseline_resnet50.yaml: identical
+# hyperparameters, only paths differ (matches where the training notebook
+# extracts the project, and Drive-backed checkpoints for --resume across
+# Colab disconnects).
+run_id: p1_augmented_resnet50
+seed: 42
+
+data:
+  train_csv: /content/dr_retina/data/splits/train_colab.csv
+  val_csv: /content/dr_retina/data/splits/val_colab.csv
+  image_root: /content/dr_retina/data/processed
+  image_size: 512
+  augment: true
+
+model:
+  backbone: resnet50
+  pretrained: true
+  head: softmax
+  num_classes: 5
+  dropout: 0.3
+
+train:
+  epochs: 30
+  batch_size: 16
+  num_workers: 2
+  optimizer: adamw
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  warmup_epochs: 2
+  amp: true
+  class_weighting: inverse_frequency
+  grad_clip_norm: 1.0
+  early_stop_patience: 8
+  checkpoint_metric: qwk
+  checkpoint_dir: /content/drive/MyDrive/dr_retina_checkpoints/p1_augmented_resnet50
+
+log:
+  log_every_n_steps: 50
+  confusion_matrix_every_epoch: true

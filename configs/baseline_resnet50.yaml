@@ -1,0 +1,38 @@
+# P0.5 baseline: plain softmax ResNet-50, no ordinal loss, no augmentation beyond
+# resize/normalize (FundusAug is added in P1 via configs/p1_augmented.yaml).
+run_id: p0_baseline_resnet50
+seed: 42
+
+data:
+  train_csv: data/splits/train.csv
+  val_csv: data/splits/val.csv
+  image_root: data/processed
+  image_size: 512
+  augment: false
+
+model:
+  backbone: resnet50          # resnet50 | efficientnet_b0
+  pretrained: true
+  head: softmax                # softmax | coral (P2)
+  num_classes: 5
+  dropout: 0.3
+
+train:
+  epochs: 30
+  batch_size: 16
+  num_workers: 8
+  optimizer: adamw
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  warmup_epochs: 2
+  amp: true                    # required to fit on 6GB VRAM
+  class_weighting: inverse_frequency
+  grad_clip_norm: 1.0
+  early_stop_patience: 8
+  checkpoint_metric: qwk        # checkpoint on best val QWK
+  checkpoint_dir: reports/checkpoints/p0_baseline_resnet50
+
+log:
+  log_every_n_steps: 50
+  confusion_matrix_every_epoch: true

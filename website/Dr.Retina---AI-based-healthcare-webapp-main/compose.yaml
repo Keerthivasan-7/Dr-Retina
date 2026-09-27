@@ -1,0 +1,30 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+    environment:
+      API_INTERNAL_BASE_URL: http://api:8000/api/v1
+      APP_URL: ${APP_URL}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+    ports: ["3000:3000"]
+    depends_on: [api]
+    restart: unless-stopped
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      ENVIRONMENT: production
+    expose: ["8000"]
+    restart: unless-stopped
+  worker:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: ${WORKER_DATABASE_URL}
+    command: ["/app/.venv/bin/python", "-m", "app.worker"]
+    restart: unless-stopped
