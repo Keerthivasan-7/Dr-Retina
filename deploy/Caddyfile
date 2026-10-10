@@ -1,0 +1,18 @@
+{$DOMAIN} {
+	encode zstd gzip
+
+	@api path /api/* /health/*
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		respond "Dr.Retina API" 200
+	}
+}
+
+# AI service: only the worker calls this. It still requires the bearer key and
+# Idempotency-Key on every request, so exposing it through TLS is safe.
+ai.{$DOMAIN} {
+	reverse_proxy ai:8100
+}

@@ -1,0 +1,86 @@
+name: drretina
+
+x-backend-env: &backend-env
+  ENVIRONMENT: production
+  SUPABASE_URL: ${SUPABASE_URL}
+  SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+  APP_URL: ${APP_URL}
+  STORAGE_BUCKET: ${STORAGE_BUCKET:-retinal-images}
+  # The backend refuses plain-http AI URLs in production, so the worker reaches the
+  # AI service through Caddy (TLS). Caddy has a network alias for this hostname.
+  AI_SERVICE_URL: https://ai.${DOMAIN}
+  AI_SERVICE_KEY: ${AI_SERVICE_KEY}
+  AI_MODEL_VERSION: ${AI_MODEL_VERSION}
+  WORKER_POLL_SECONDS: ${WORKER_POLL_SECONDS:-3}
+  WORKER_LEASE_SECONDS: ${WORKER_LEASE_SECONDS:-300}
+
+services:
+  caddy:
+    image: caddy:2
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      default:
+        aliases:
+          - ${DOMAIN}
+          - ai.${DOMAIN}
+    depends_on:
+      - api
+      - ai
+
+  api:
+    build: ../website/Dr.Retina---AI-based-healthcare-webapp-main/backend
+    restart: always
+    environment:
+      <<: *backend-env
+      DATABASE_URL: ${API_DATABASE_URL}
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/live', timeout=4).status == 200 else 1)"]
+      interval: 30s
+      timeout: 6s
+      retries: 3
+      start_period: 20s
+
+  worker:
+    build: ../website/Dr.Retina---AI-based-healthcare-webapp-main/backend
+    restart: always
+    command: ["/app/.venv/bin/python", "-m", "app.worker"]
+    environment:
+      <<: *backend-env
+      DATABASE_URL: ${WORKER_DATABASE_URL}
+    depends_on:
+      - ai
+
+  ai:
+    build:
+      context: ..
+      dockerfile: deploy/ai.Dockerfile
+    restart: always
+    environment:
+      AI_SERVICE_KEY: ${AI_SERVICE_KEY}
+      AI_MODEL_VERSION: ${AI_MODEL_VERSION}
+    volumes:
+      - ./models/checkpoints:/app/reports/checkpoints:ro
+    expose:
+      - "8100"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8100/health', timeout=4).status == 200 else 1)"]
+      interval: 30s
+      timeout: 6s
+      retries: 3
+      start_period: 120s
+
+volumes:
+  caddy_data:
+  caddy_config:
