@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="Dr.Retina: explainable, calibrated, human-in-the-loop diabetic retinopathy screening">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06142e"/>
+      <stop offset="0.55" stop-color="#0b3a82"/>
+      <stop offset="1" stop-color="#135FB3"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#5eead4" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#5eead4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fundus" cx="0.42" cy="0.45" r="0.65">
+      <stop offset="0" stop-color="#ffb26b"/>
+      <stop offset="0.55" stop-color="#e2562b"/>
+      <stop offset="1" stop-color="#7a1f12"/>
+    </radialGradient>
+    <clipPath id="eyeclip"><circle cx="1040" cy="190" r="128"/></clipPath>
+    <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+  </defs>
+
+  <rect width="1280" height="420" fill="url(#bg)"/>
+  <circle cx="1040" cy="190" r="250" fill="url(#glow)"/>
+
+  <g stroke="#ffffff" stroke-opacity="0.05">
+    <path d="M0 70H1280M0 140H1280M0 210H1280M0 280H1280M0 350H1280"/>
+    <path d="M160 0V420M320 0V420M480 0V420M640 0V420M800 0V420M960 0V420M1120 0V420"/>
+  </g>
+
+  <!-- retina illustration -->
+  <circle cx="1040" cy="190" r="140" fill="none" stroke="#5eead4" stroke-opacity="0.5" stroke-width="2"/>
+  <circle cx="1040" cy="190" r="150" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="3 7"/>
+  <circle cx="1040" cy="190" r="128" fill="url(#fundus)"/>
+  <g clip-path="url(#eyeclip)" fill="none" stroke="#7d1a0d" stroke-linecap="round" filter="url(#soft)">
+    <path d="M1000 175C960 150 930 120 905 80" stroke-width="5"/>
+    <path d="M1000 185C950 190 920 205 890 240" stroke-width="5"/>
+    <path d="M1000 180C985 140 995 100 1010 60" stroke-width="4"/>
+    <path d="M1000 195C990 235 1000 275 1020 320" stroke-width="4"/>
+    <path d="M960 135C940 140 925 135 905 120" stroke-width="2.5"/>
+    <path d="M945 215C925 215 915 225 900 240" stroke-width="2.5"/>
+    <path d="M1005 120C1030 115 1050 100 1075 85" stroke-width="2.5"/>
+  </g>
+  <circle cx="1002" cy="188" r="30" fill="#ffd9a0" fill-opacity="0.95"/>
+  <circle cx="1002" cy="188" r="30" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2"/>
+  <g clip-path="url(#eyeclip)">
+    <circle cx="1075" cy="215" r="6" fill="#ffe14d"/>
+    <circle cx="1090" cy="228" r="4" fill="#ffe14d"/>
+    <circle cx="1068" cy="238" r="5" fill="#ffe14d"/>
+    <circle cx="1060" cy="150" r="5" fill="#ff3b3b"/>
+    <circle cx="1085" cy="170" r="4" fill="#ff8a1f"/>
+    <circle cx="1100" cy="195" r="3.5" fill="#ff3b3b"/>
+  </g>
+  <g fill="none" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round">
+    <path d="M1054 128l8 -8 8 8" opacity="0"/>
+    <rect x="1058" y="136" width="30" height="30" rx="6" stroke-dasharray="6 5"/>
+    <rect x="1066" y="204" width="34" height="42" rx="6" stroke-dasharray="6 5"/>
+  </g>
+
+  <!-- text -->
+  <g font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <text x="72" y="104" font-size="22" font-weight="700" fill="#5eead4" letter-spacing="4">SMART INDIA HACKATHON 2026  ·  PS 26038  ·  MATHWORKS</text>
+    <text x="68" y="206" font-size="96" font-weight="800" fill="#ffffff" letter-spacing="-2">Dr.<tspan fill="#5eead4">Retina</tspan></text>
+    <text x="72" y="256" font-size="30" font-weight="500" fill="#e6f0ff">Explainable, calibrated, human-in-the-loop</text>
+    <text x="72" y="294" font-size="30" font-weight="500" fill="#e6f0ff">diabetic retinopathy screening.</text>
+
+    <g transform="translate(72,330)">
+      <rect width="190" height="46" rx="23" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.3"/>
+      <text x="95" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">Quality gate</text>
+      <rect x="206" width="190" height="46" rx="23" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.3"/>
+      <text x="301" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">Calibrated grade</text>
+      <rect x="412" width="190" height="46" rx="23" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.3"/>
+      <text x="507" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">Lesion evidence</text>
+      <rect x="618" width="190" height="46" rx="23" fill="#5eead4" fill-opacity="0.95"/>
+      <text x="713" y="30" text-anchor="middle" font-size="18" font-weight="800" fill="#06142e">Doctor review</text>
+    </g>
+
+    <text x="1040" y="378" text-anchor="middle" fill="#cfe1ff" font-size="16" font-weight="700" letter-spacing="3">MATLAB  ·  MOBILE  ·  WEB</text>
+  </g>
+</svg>
