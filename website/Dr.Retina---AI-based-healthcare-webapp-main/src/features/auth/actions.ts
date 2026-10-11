@@ -21,6 +21,23 @@ export async function loginAction(form: FormData) {
   } catch { return { ok: false as const, error: "Authentication is unavailable. Contact your administrator." }; }
   redirect(destination);
 }
+const DEMO_ROLES = { ORG_ADMIN: "ADMIN", DOCTOR: "DOCTOR", LAB_TECHNICIAN: "TECH" } as const;
+export async function demoLoginAction(role: string) {
+  const key = DEMO_ROLES[role as keyof typeof DEMO_ROLES];
+  const email = key && process.env[`DEMO_${key}_EMAIL`];
+  const password = key && process.env[`DEMO_${key}_PASSWORD`];
+  if (process.env.DEMO_LOGIN_ENABLED !== "true" || !email || !password)
+    return { ok: false as const, error: "Demo access is not available." };
+  let destination = "/onboarding";
+  try {
+    const client = await createSupabaseServerClient();
+    const { error } = await client.auth.signInWithPassword({ email, password });
+    if (error) return { ok: false as const, error: "Demo access is temporarily unavailable." };
+    const session = await getSession();
+    if (session) destination = defaultRouteForRole(session.role);
+  } catch { return { ok: false as const, error: "Demo access is temporarily unavailable." }; }
+  redirect(destination);
+}
 export async function logoutAction() {
   let failed = false;
   try {

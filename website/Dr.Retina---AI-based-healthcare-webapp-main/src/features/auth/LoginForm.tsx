@@ -19,7 +19,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import Link from "next/link";
-import { loginAction } from "@/features/auth/actions";
+import { demoLoginAction, loginAction } from "@/features/auth/actions";
 import { LoginSchema, type LoginInput } from "@/lib/validation/schemas";
 import { cn } from "@/lib/utils/cn";
 
@@ -29,8 +29,9 @@ const ROLES = [
   { id: "ORG_ADMIN", label: "Administrator", subtitle: "System & Camp Manager", Icon: LayoutDashboard, description: "Manage healthcare workers, screening camps, organization analytics, and audit logs." },
 ] as const;
 
-export function LoginForm() {
+export function LoginForm({ demoEnabled = false }: { demoEnabled?: boolean }) {
   const searchParams = useSearchParams();
+  const [demoBusy, setDemoBusy] = React.useState(false);
   const orgId = searchParams.get("orgId") ?? "";
   const orgName = searchParams.get("orgName") ?? "Selected Healthcare Org";
   const linkError = searchParams.get("error");
@@ -147,6 +148,24 @@ export function LoginForm() {
               <KeyRound className="w-4 h-4" aria-hidden="true" />
               <span>{isSubmitting ? "Authenticating..." : "Sign In"}</span>
             </button>
+            {demoEnabled && (
+              <div className="text-center pt-1">
+                <button
+                  type="button"
+                  disabled={demoBusy || isSubmitting}
+                  onClick={async () => {
+                    setServerError(null);
+                    setDemoBusy(true);
+                    const result = await demoLoginAction(role);
+                    if (result && !result.ok) { setServerError(result.error); setDemoBusy(false); }
+                  }}
+                  className="text-sm text-brand-600 font-semibold hover:text-brand-700 hover:underline disabled:opacity-60"
+                >
+                  {demoBusy ? "Opening demo..." : `Demo login as ${ROLES.find((r) => r.id === role)?.label ?? "Doctor"} (for judges)`}
+                </button>
+                <p className="text-[11px] text-slate-400 mt-1">One click, no password. Uses a sample organization with no real patient data.</p>
+              </div>
+            )}
             {serverError && <p role="alert" className="text-xs text-rose-600 text-center">{serverError}</p>}
             {errors.orgId && <p role="alert" className="text-xs text-rose-600 text-center">Please select an organization first.</p>}
           </form>
